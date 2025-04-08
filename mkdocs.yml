@@ -1,0 +1,30 @@
+site_name: Go Training Exercises
+site_description: A collection of exercises for Go beginners
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - content.code.copy
+
+nav:
+  - Home: index.md
+  - HTTP Basics:
+    - Introduction to net/http: http/introduction.md
+    - Making HTTP Requests: http/making-requests.md
+    - Struct Tags: http/struct-tags.md
+    - Parsing JSON Responses: http/parsing-json.md
+    - HTTP Client Example: http/http-client-example.md
+    - JSON Parsing Example: http/json-parsing-example.md
+  - Testing:
+    - Overview: testing/index.md
+    - Basic Unit Tests: testing/basic-unit-tests.md
+    - Table-Driven Tests: testing/table-driven-tests.md
+    - Running Tests: testing/running-tests.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
