@@ -16,6 +16,7 @@ nav:
     - Parsing JSON Responses: http/parsing-json.md
     - HTTP Client Example: http/http-client-example.md
     - JSON Parsing Example: http/json-parsing-example.md
+    - Exercises: http/exercises.md
   - Testing:
     - Overview: testing/index.md
     - Basic Unit Tests: testing/basic-unit-tests.md
@@ -25,6 +26,9 @@ nav:
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.superfences
   - admonition
   - pymdownx.details
