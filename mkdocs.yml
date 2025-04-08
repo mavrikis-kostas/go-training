@@ -22,6 +22,10 @@ nav:
     - Basic Unit Tests: testing/basic-unit-tests.md
     - Table-Driven Tests: testing/table-driven-tests.md
     - Running Tests: testing/running-tests.md
+  - CLI with Cobra:
+    - Overview: cli/index.md
+    - Basic Usage: cli/basic-usage.md
+    - Advanced Usage: cli/advanced-usage.md
 
 markdown_extensions:
   - pymdownx.highlight:

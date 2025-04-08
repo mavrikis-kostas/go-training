@@ -15,6 +15,11 @@ Welcome to the Go Training documentation! This guide will help you learn Go prog
 - Using table-driven tests for efficient testing
 - Running tests and interpreting results
 
+### CLI with Cobra
+- Building command-line interfaces using the Cobra library
+- Creating commands, subcommands, and flags
+- Implementing command aliases and argument validation
+
 ## Prerequisites
 
 Basic knowledge of Go programming (variables, functions, structs)
@@ -24,3 +29,5 @@ Basic knowledge of Go programming (variables, functions, structs)
 Start with the "HTTP Basics" section to learn about making HTTP requests and processing responses. The section includes both conceptual explanations and practical examples.
 
 When you're ready to learn about testing, check out the "Testing" section for comprehensive guides on writing and running tests in Go.
+
+If you're interested in building command-line applications, the "CLI with Cobra" section provides guides on creating powerful CLI tools using the popular Cobra library.
