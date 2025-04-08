@@ -22,6 +22,7 @@ nav:
     - Basic Unit Tests: testing/basic-unit-tests.md
     - Table-Driven Tests: testing/table-driven-tests.md
     - Running Tests: testing/running-tests.md
+    - Exercises: testing/exercises.md
   - CLI with Cobra:
     - Overview: cli/index.md
     - Basic Usage: cli/basic-usage.md
