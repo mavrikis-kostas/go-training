@@ -28,8 +28,8 @@ type UserResponse struct {
 	UserAttributes UserAttributes `json:"attributes"`
 }
 
-type AccountsResponse struct {
-	AccountsAttributes AccountAttributes `json:"attributes"`
+type AccountResponse struct {
+	AccountAttributes AccountAttributes `json:"attributes"`
 }
 
 const URL = "https://sample-accounts-api.herokuapp.com/users/"
@@ -50,13 +50,19 @@ func main() {
 	}
 
 	user, err := getUser(userId)
-	accounts, err := getAccounts(userId)
-
 	if err != nil {
-		fmt.Println("error: ", err)
+		fmt.Println("Error getting user: ", err)
+		return
 	}
 
-	fmt.Println("user: ", user)
+	accounts, err := getAccounts(userId)
+	if err != nil {
+		fmt.Println("Error getting accounts: ", err)
+		return
+	}
+
+	fmt.Println("User: ", user)
+	fmt.Println("Accounts: ")
 	printAccounts(accounts)
 }
 
@@ -64,24 +70,24 @@ func getUser(id int) (string, error) {
 	resp, err := http.Get(URL + strconv.Itoa(id))
 
 	if err != nil {
-		fmt.Println("Error making request: ", err)
 		return "", fmt.Errorf("error in making request: %v", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		fmt.Println("response error: ", resp.StatusCode)
 		return "", fmt.Errorf("response error: %v", resp.StatusCode)
 	}
 
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("error in reading response body: %v", err)
+	}
 
 	var res UserResponse
 	err = json.Unmarshal(body, &res)
 
 	if err != nil {
-		fmt.Println("error in parsing json: ", err)
 		return "", fmt.Errorf("error in parsing json: %v", err)
 	}
 
@@ -92,29 +98,30 @@ func getAccounts(id int) ([]AccountAttributes, error) {
 	resp, err := http.Get(URL + strconv.Itoa(id) + "/accounts")
 
 	if err != nil {
-		fmt.Println("Error making request: ", err)
 		return nil, fmt.Errorf("error in making request: %v", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("response error: %v", resp.StatusCode)
 	}
 
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("Error reading response body: ", err)
 		return nil, fmt.Errorf("error in reading response body: %v", err)
 	}
 
-	var res []AccountsResponse
+	var res []AccountResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
-		fmt.Println("error in parsing json: ", err)
 		return nil, fmt.Errorf("error in parsing json: %v", err)
 	}
 
 	var accounts []AccountAttributes = []AccountAttributes{}
 
 	for _, account := range res {
-		accounts = append(accounts, account.AccountsAttributes)
+		accounts = append(accounts, account.AccountAttributes)
 	}
 
 	return accounts, nil
@@ -124,7 +131,7 @@ func printAccounts(accounts []AccountAttributes) {
 	var totalBalance int = 0
 
 	for _, account := range accounts {
-		fmt.Println(account.Name, ": ", account.Balance)
+		fmt.Println(" -", account.Name, ": ", account.Balance)
 		totalBalance += account.Balance
 	}
 	fmt.Println("Total balance: ", totalBalance)
