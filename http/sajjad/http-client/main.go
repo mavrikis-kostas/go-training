@@ -7,7 +7,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/murtaza-sajjad/http-client/models"
+	"github.com/murtaza-sajjad/http-client/user"
+	"github.com/murtaza-sajjad/http-client/useraccount"
 )
 
 func main() {
@@ -23,7 +24,7 @@ func main() {
 	// ================================ Get User ================================
 	// Get user information from the API, getUser function is defined below it takes a userID as an argument and returns a User struct
 
-	user, err := getUser(userID)
+	userObj, err := getUser(userID)
 	if err != nil {
 		fmt.Println("Error getting user:", err)
 		return
@@ -39,13 +40,13 @@ func main() {
 	}
 
 	// ================================ Logs ================================
-	fmt.Println("User:", user)
+	fmt.Println("User:", userObj)
 	fmt.Println("Accounts:", accounts)
 
 	fmt.Println("================================================")
 
 	// ================================ Display User Name ================================
-	fmt.Println("User:", user.Attributes.Name)
+	fmt.Println("User:", userObj.Attributes.Name)
 
 	// ================================ Display Accounts ================================
 
@@ -69,28 +70,28 @@ func userID() (string, error) {
 	return os.Args[1], nil
 }
 
-func getUser(userID string) (models.User, error) {
+func getUser(userID string) (user.User, error) {
 	var resp *http.Response
 	var err error
 	if resp, err = http.Get("https://sample-accounts-api.herokuapp.com/users/" + userID); err != nil {
-		return models.User{}, err
+		return user.User{}, err
 	}
 	defer resp.Body.Close()
 
 	var body []byte
 	if body, err = io.ReadAll(resp.Body); err != nil {
-		return models.User{}, err
+		return user.User{}, err
 	}
 
-	var user models.User
-	if err = json.Unmarshal(body, &user); err != nil {
-		return models.User{}, err
+	var userObj user.User
+	if err = json.Unmarshal(body, &userObj); err != nil {
+		return user.User{}, err
 	}
 
-	return user, nil
+	return userObj, nil
 }
 
-func getUserAccounts(userID string) ([]models.Account, error) {
+func getUserAccounts(userID string) ([]useraccount.Account, error) {
 	var resp *http.Response
 	var err error
 	if resp, err = http.Get("https://sample-accounts-api.herokuapp.com/users/" + userID + "/accounts"); err != nil {
@@ -103,7 +104,7 @@ func getUserAccounts(userID string) ([]models.Account, error) {
 		return nil, err
 	}
 
-	var accounts []models.Account
+	var accounts []useraccount.Account
 	if err = json.Unmarshal(body, &accounts); err != nil {
 		return nil, err
 	}
