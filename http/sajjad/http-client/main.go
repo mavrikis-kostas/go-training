@@ -70,20 +70,20 @@ func userID() (string, error) {
 }
 
 func getUser(userID string) (models.User, error) {
-	resp, err := http.Get("https://sample-accounts-api.herokuapp.com/users/" + userID)
-	if err != nil {
+	var resp *http.Response
+	var err error
+	if resp, err = http.Get("https://sample-accounts-api.herokuapp.com/users/" + userID); err != nil {
 		return models.User{}, err
 	}
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
+	var body []byte
+	if body, err = io.ReadAll(resp.Body); err != nil {
 		return models.User{}, err
 	}
 
 	var user models.User
-	err = json.Unmarshal(body, &user)
-	if err != nil {
+	if err = json.Unmarshal(body, &user); err != nil {
 		return models.User{}, err
 	}
 
@@ -91,20 +91,20 @@ func getUser(userID string) (models.User, error) {
 }
 
 func getUserAccounts(userID string) ([]models.Account, error) {
-	resp, err := http.Get("https://sample-accounts-api.herokuapp.com/users/" + userID + "/accounts")
-	if err != nil {
+	var resp *http.Response
+	var err error
+	if resp, err = http.Get("https://sample-accounts-api.herokuapp.com/users/" + userID + "/accounts"); err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
+	var body []byte
+	if body, err = io.ReadAll(resp.Body); err != nil {
 		return nil, err
 	}
 
 	var accounts []models.Account
-	err = json.Unmarshal(body, &accounts)
-	if err != nil {
+	if err = json.Unmarshal(body, &accounts); err != nil {
 		return nil, err
 	}
 
