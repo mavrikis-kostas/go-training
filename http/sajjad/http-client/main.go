@@ -6,108 +6,86 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 
-	"github.com/murtaza-sajjad/http-client/user"
-	"github.com/murtaza-sajjad/http-client/useraccount"
+	"github.com/murtaza-sajjad/http-client/models"
 )
 
 func main() {
-	// ================================ Get User ID ================================
-	// Get user ID from command line arguments, If no user ID is provided, return an error, e.g. go run main.go 1 here 1 is the user ID
-
-	userID, err := userID()
-	if err != nil {
-		fmt.Println("Error getting user ID:", err)
+	// Check if user ID is provided as command-line argument
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: go run main.go <user_id>")
 		return
 	}
 
-	// ================================ Get User ================================
-	// Get user information from the API, getUser function is defined below it takes a userID as an argument and returns a User struct
+	userID := os.Args[1]
 
-	userObj, err := getUser(userID)
+	// Validate that the user ID is a number
+	_, err := strconv.Atoi(userID)
 	if err != nil {
-		fmt.Println("Error getting user:", err)
+		fmt.Println("Invalid user ID. Please provide a numeric user ID:", err)
 		return
 	}
 
-	// ================================ Get User Accounts ================================
-	// Get user accounts from the API, getUserAccounts function is defined below it takes a userID as an argument and returns a []Account struct
-
-	accounts, err := getUserAccounts(userID)
+	// Construct URL with the dynamic user ID
+	userURL := fmt.Sprintf("https://sample-accounts-api.herokuapp.com/users/%s", userID)
+	resp, err := http.Get(userURL)
 	if err != nil {
-		fmt.Println("Error getting accounts:", err)
+		fmt.Printf("error fetching user %s: %v\n", userID, err)
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		fmt.Printf("unexpected status code fetching user %s: %d\n", userID, resp.StatusCode)
 		return
 	}
 
-	// ================================ Logs ================================
-	fmt.Println("User:", userObj)
-	fmt.Println("Accounts:", accounts)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("error reading user response body: %v\n", err)
+		return
+	}
 
-	fmt.Println("================================================")
+	// Unmarshal the JSON response into a User struct
+	var user models.User
+	if err = json.Unmarshal(body, &user); err != nil {
+		fmt.Printf("error parsing user data: %v\n", err)
+		return
+	}
 
-	// ================================ Display User Name ================================
-	fmt.Println("User:", userObj.Attributes.Name)
+	// Display user name
+	fmt.Println("User:", user.Attributes.Name)
 
-	// ================================ Display Accounts ================================
+	// Fetch and display account details
+	accountsURL := fmt.Sprintf("https://sample-accounts-api.herokuapp.com/users/%s/accounts", userID)
+	accountsResp, err := http.Get(accountsURL)
+	if err != nil {
+		fmt.Printf("error fetching accounts for user %s: %v\n", userID, err)
+		return
+	}
+	defer accountsResp.Body.Close()
 
+	accountsBody, err := io.ReadAll(accountsResp.Body)
+	if err != nil {
+		fmt.Printf("error reading accounts response body: %v\n", err)
+		return
+	}
+
+	var accounts []models.Account
+	if err = json.Unmarshal(accountsBody, &accounts); err != nil {
+		fmt.Printf("error parsing accounts data: %v\n", err)
+		return
+	}
+
+	// Display accounts and calculate total balance
 	fmt.Println("Accounts:")
-
 	totalBalance := 0
 	for _, account := range accounts {
 		fmt.Printf("  - %s: %d\n", account.Attributes.Name, account.Attributes.Balance)
 		totalBalance += account.Attributes.Balance
 	}
 
-	// totalBalance is a variable that is the sum of all the balances of the accounts in the []Account struct
+	// Display total balance
 	fmt.Printf("Total Balance: %d\n", totalBalance)
-}
-
-func userID() (string, error) {
-	if len(os.Args) < 2 {
-		return "", fmt.Errorf("Please provide a user ID")
-	}
-
-	return os.Args[1], nil
-}
-
-func getUser(userID string) (user.User, error) {
-	var resp *http.Response
-	var err error
-	if resp, err = http.Get("https://sample-accounts-api.herokuapp.com/users/" + userID); err != nil {
-		return user.User{}, err
-	}
-	defer resp.Body.Close()
-
-	var body []byte
-	if body, err = io.ReadAll(resp.Body); err != nil {
-		return user.User{}, err
-	}
-
-	var userObj user.User
-	if err = json.Unmarshal(body, &userObj); err != nil {
-		return user.User{}, err
-	}
-
-	return userObj, nil
-}
-
-func getUserAccounts(userID string) ([]useraccount.Account, error) {
-	var resp *http.Response
-	var err error
-	if resp, err = http.Get("https://sample-accounts-api.herokuapp.com/users/" + userID + "/accounts"); err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	var body []byte
-	if body, err = io.ReadAll(resp.Body); err != nil {
-		return nil, err
-	}
-
-	var accounts []useraccount.Account
-	if err = json.Unmarshal(body, &accounts); err != nil {
-		return nil, err
-	}
-
-	return accounts, nil
 }
