@@ -9,12 +9,12 @@ First, let's set up our project structure:
 
 ```
 calculator/
-├── calculator.proto    # Protocol Buffers definition
+├── calculator.proto	 # Protocol Buffers definition
 ├── server/
-│   └── main.go         # gRPC server implementation
+│	└── main.go			# gRPC server implementation
 ├── client/
-│   └── main.go         # gRPC client implementation
-└── calculator/         # Generated code (will be created)
+│	└── main.go			# gRPC client implementation
+└── example.com/calculator/			# Generated code (will be created)
 ```
 
 ## Step 1: Define the Service with Protocol Buffers
@@ -33,8 +33,8 @@ service Calculator {
   // Unary RPC
   rpc Add (AddRequest) returns (AddResponse);
 
-  // Server streaming RPC
-  rpc CountDown (CountDownRequest) returns (stream CountDownResponse);
+  // Unary RPC
+  rpc Subtract (SubtractRequest) returns (SubtractResponse);
 }
 
 // Request message for Add method
@@ -46,16 +46,19 @@ message AddRequest {
 // Response message for Add method
 message AddResponse {
   int32 result = 1;
+  string operation = 2;  // Description of the operation performed
 }
 
-// Request message for CountDown method
-message CountDownRequest {
-  int32 start = 1;  // Start counting down from this number
+// Request message for Subtract method
+message SubtractRequest {
+  int32 a = 1;
+  int32 b = 2;
 }
 
-// Response message for CountDown method
-message CountDownResponse {
-  int32 number = 1;  // Current number in the countdown
+// Response message for Subtract method
+message SubtractResponse {
+  int32 result = 1;
+  string operation = 2;  // Description of the operation performed
 }
 ```
 
@@ -84,11 +87,10 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"time"
 
 	"google.golang.org/grpc"
 
-	pb "example.com/calculator/calculator"
+	pb "go-together/example.com/calculator"
 )
 
 // server is used to implement the Calculator service
@@ -99,23 +101,19 @@ type server struct {
 // Add implements the Add RPC method
 func (s *server) Add(ctx context.Context, req *pb.AddRequest) (*pb.AddResponse, error) {
 	log.Printf("Received: %v + %v", req.A, req.B)
-	return &pb.AddResponse{Result: req.A + req.B}, nil
+	return &pb.AddResponse{
+		Result:    req.A + req.B,
+		Operation: fmt.Sprintf("Added %d and %d", req.A, req.B),
+	}, nil
 }
 
-// CountDown implements the CountDown RPC method
-func (s *server) CountDown(req *pb.CountDownRequest, stream pb.Calculator_CountDownServer) error {
-	log.Printf("Starting countdown from %v", req.Start)
-
-	// Simple countdown
-	for num := req.Start; num > 0; num-- {
-		// Send the current number to the client
-		if err := stream.Send(&pb.CountDownResponse{Number: num}); err != nil {
-			return err
-		}
-		// Small delay to simulate processing time
-		time.Sleep(100 * time.Millisecond)
-	}
-	return nil
+// Subtract implements the Subtract RPC method
+func (s *server) Subtract(ctx context.Context, req *pb.SubtractRequest) (*pb.SubtractResponse, error) {
+	log.Printf("Received: %v - %v", req.A, req.B)
+	return &pb.SubtractResponse{
+		Result:    req.A - req.B,
+		Operation: fmt.Sprintf("Subtracted %d from %d", req.B, req.A),
+	}, nil
 }
 
 func main() {
@@ -148,19 +146,18 @@ package main
 
 import (
 	"context"
-	"io"
 	"log"
 	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	pb "example.com/calculator/calculator"
+	pb "go-together/example.com/calculator"
 )
 
 func main() {
 	// Set up a connection to the server
-	conn, err := grpc.Dial("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("Failed to connect: %v", err)
 	}
@@ -178,27 +175,14 @@ func main() {
 	if err != nil {
 		log.Fatalf("Add failed: %v", err)
 	}
-	log.Printf("Add result: %v", addResponse.Result)
+	log.Printf("Add result: %v (%s)", addResponse.Result, addResponse.Operation)
 
-	// Call the CountDown method
-	countDownStream, err := client.CountDown(ctx, &pb.CountDownRequest{Start: 10})
+	// Call the Subtract method
+	subtractResponse, err := client.Subtract(ctx, &pb.SubtractRequest{A: 30, B: 5})
 	if err != nil {
-		log.Fatalf("CountDown failed: %v", err)
+		log.Fatalf("Subtract failed: %v", err)
 	}
-
-	// Receive and print all numbers in the countdown
-	log.Println("Countdown:")
-	for {
-		countDown, err := countDownStream.Recv()
-		if err == io.EOF {
-			// End of stream
-			break
-		}
-		if err != nil {
-			log.Fatalf("Error while receiving: %v", err)
-		}
-		log.Printf("  %v", countDown.Number)
-	}
+	log.Printf("Subtract result: %v (%s)", subtractResponse.Result, subtractResponse.Operation)
 }
 ```
 
@@ -216,54 +200,44 @@ func main() {
 
 You should see output similar to:
 
-**Server output:**
+**Server Output:**
 
 ```
 Server started on :50051
 Received: 10 + 20
-Starting countdown from 10
+Received: 30 - 5
 ```
 
-**Client output:**
+**Client Output:**
 
 ```
-Add result: 30
-Countdown:
-  10
-  9
-  8
-  7
-  6
-  5
-  4
-  3
-  2
-  1
+Add result: 30 (Added 10 and 20)
+Subtract result: 25 (Subtracted 5 from 30)
 ```
 
 ## Understanding the Example
 
 ### Server Implementation
 
-1. We create a gRPC server and register our Calculator service.
-2. We implement the `Add` method for unary RPC (simple request-response).
-3. We implement the `CountDown` method for server streaming RPC, where the server sends multiple responses.
+1. We define a `server` struct that implements the `CalculatorServer` interface.
+2. We implement the `Add` and `Subtract` methods, which handle incoming requests.
+3. We create a TCP listener on port 50051 and register our service with the gRPC server.
+4. We start the server to listen for incoming requests.
+5. We log the received requests and return the results in the response messages.
 
 ### Client Implementation
 
-1. We establish a connection to the gRPC server.
-2. We create a client stub for the Calculator service.
-3. We call the `Add` method and receive a single response.
-4. We call the `CountDown` method and receive a stream of responses.
+1. We create a connection to the server using `grpc.NewClient`.
+2. We create a client for the `Calculator` service.
+3. We call the `Add` and `Subtract` methods on the client, passing in the request messages.
 
-## Next Steps
+### Context and Timeout
 
-This example demonstrates the basics of gRPC in Go. To build on this knowledge, you might want to explore:
+Go's `context` package is used to manage timeouts and cancellation signals. In this example, we set a timeout of 1
+second for our API calls using `context.WithTimeout`. This ensures that if the server does not respond within
+the specified time, the client will cancel the request and return an error.
 
-1. **Client Streaming**: Where the client sends multiple requests to the server.
-2. **Bidirectional Streaming**: Where both client and server send multiple messages.
-3. **Error Handling**: How to properly handle and propagate errors in gRPC.
-4. **Authentication**: How to secure your gRPC services.
-5. **Interceptors**: Similar to middleware in HTTP servers, for cross-cutting concerns.
+The `ctx` variable needs to be passed to the gRPC methods to ensure that the server can handle cancellation signals and
+timeouts properly.
 
-In the next section, we'll provide exercises to help you practice these concepts.
+For more information on using context in Go, refer to the [context package documentation](https://pkg.go.dev/context).

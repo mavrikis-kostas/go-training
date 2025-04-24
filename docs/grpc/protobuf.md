@@ -46,19 +46,14 @@ message Person {
 
 ### Key Elements in a .proto File
 
-1. **Syntax Declaration**: Specifies which version of Protocol Buffers you're using (proto2 or proto3).
-
-2. **Package Declaration**: Optional namespace to prevent name conflicts.
-
-3. **Message Definitions**: Define the structure of your data.
-
-4. **Field Types**: Protobuf supports various scalar types (int32, string, bool, etc.) and complex types.
-
-5. **Field Numbers**: Each field has a unique number that identifies it in the binary encoding.
-
-6. **Field Rules**:
-    - `singular`: (default) The field can occur 0 or 1 times.
-    - `repeated`: The field can be repeated any number of times (including 0).
+| Element                 | Description                                                                                                                       |
+|-------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| **Syntax Declaration**  | Specifies which version of Protocol Buffers you're using (proto2 or proto3)                                                       |
+| **Package Declaration** | Optional namespace to prevent name conflicts                                                                                      |
+| **Message Definitions** | Define the structure of your data                                                                                                 |
+| **Field Types**         | Protobuf supports various scalar types (int32, string, bool, etc.) and complex types                                              |
+| **Field Numbers**       | Each field has a unique number that identifies it in the binary encoding                                                          |
+| **Field Rules**         | `singular`: (default) The field can occur 0 or 1 times<br>`repeated`: The field can be repeated any number of times (including 0) |
 
 ## Defining a gRPC Service
 
@@ -73,18 +68,17 @@ package example;
 service Greeter {
   // Unary RPC
   rpc SayHello (HelloRequest) returns (HelloResponse);
-
-  // Server streaming RPC
-  rpc SayHellos (HelloRequest) returns (stream HelloResponse);
 }
 
 // Message definitions
 message HelloRequest {
   string name = 1;
+  string language = 2;  // Optional language preference
 }
 
 message HelloResponse {
   string greeting = 1;
+  string timestamp = 2;  // When the greeting was generated
 }
 ```
 
@@ -117,8 +111,8 @@ service Calculator {
   // Unary RPC
   rpc Add (AddRequest) returns (AddResponse);
 
-  // Server streaming RPC
-  rpc GeneratePrimes (PrimeRequest) returns (stream PrimeResponse);
+  // Unary RPC
+  rpc Subtract (SubtractRequest) returns (SubtractResponse);
 }
 
 // Request message for Add method
@@ -130,16 +124,19 @@ message AddRequest {
 // Response message for Add method
 message AddResponse {
   int32 result = 1;
+  string operation = 2;  // Description of the operation performed
 }
 
-// Request message for GeneratePrimes method
-message PrimeRequest {
-  int32 limit = 1;  // Generate primes up to this number
+// Request message for Subtract method
+message SubtractRequest {
+  int32 a = 1;
+  int32 b = 2;
 }
 
-// Response message for GeneratePrimes method
-message PrimeResponse {
-  int32 prime = 1;  // A prime number
+// Response message for Subtract method
+message SubtractResponse {
+  int32 result = 1;
+  string operation = 2;  // Description of the operation performed
 }
 ```
 

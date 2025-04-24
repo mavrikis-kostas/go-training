@@ -20,24 +20,12 @@ service-to-service communication.
 
 ## Key Features of gRPC
 
-1. **Language Agnostic**: gRPC supports multiple programming languages, allowing services written in different languages
-   to communicate seamlessly.
-
-2. **Efficient Communication**:
-    - Uses HTTP/2 for transport, which supports multiplexing (multiple requests over a single connection)
-    - Supports header compression
-    - Enables persistent connections between client and server
-
-3. **Strong Typing**:
-    - Service interfaces are defined using Protocol Buffers
-    - Automatic code generation for client and server stubs
-    - Type-safe communication between services
-
-4. **Streaming Support**:
-    - Unary RPC (traditional request-response)
-    - Server streaming RPC (server sends multiple responses)
-    - Client streaming RPC (client sends multiple requests)
-    - Bidirectional streaming RPC (both client and server send multiple messages)
+| Feature                     | Description                                                                                                                                                                                                                                        |
+|-----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Language Agnostic**       | gRPC supports multiple programming languages, allowing services written in different languages to communicate seamlessly                                                                                                                           |
+| **Efficient Communication** | - Uses HTTP/2 for transport, which supports multiplexing (multiple requests over a single connection)<br>- Supports header compression<br>- Enables persistent connections between client and server                                               |
+| **Strong Typing**           | - Service interfaces are defined using Protocol Buffers<br>- Automatic code generation for client and server stubs<br>- Type-safe communication between services                                                                                   |
+| **Streaming Support**       | - Unary RPC (traditional request-response)<br>- Server streaming RPC (server sends multiple responses)<br>- Client streaming RPC (client sends multiple requests)<br>- Bidirectional streaming RPC (both client and server send multiple messages) |
 
 ## When to Use gRPC
 

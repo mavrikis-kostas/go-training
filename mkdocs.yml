@@ -33,6 +33,7 @@ nav:
     - Introduction to gRPC: grpc/introduction.md
     - Protocol Buffers: grpc/protobuf.md
     - Server-Client Example: grpc/server-client-example.md
+    - REST vs gRPC: grpc/rest-vs-grpc.md
     - Exercises: grpc/exercises.md
 
 markdown_extensions:
