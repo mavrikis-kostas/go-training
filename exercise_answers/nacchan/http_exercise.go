@@ -70,25 +70,25 @@ func getUser(id int) (string, error) {
 	resp, err := http.Get(URL + strconv.Itoa(id))
 
 	if err != nil {
-		return "", fmt.Errorf("error in making request: %v", err)
+		return "", fmt.Errorf("error in making request: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("response error: %v", resp.StatusCode)
+		return "", fmt.Errorf("response error: %w", resp.StatusCode)
 	}
 
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("error in reading response body: %v", err)
+		return "", fmt.Errorf("error in reading response body: %w", err)
 	}
 
 	var res UserResponse
 	err = json.Unmarshal(body, &res)
 
 	if err != nil {
-		return "", fmt.Errorf("error in parsing json: %v", err)
+		return "", fmt.Errorf("error in parsing json: %w", err)
 	}
 
 	return res.UserAttributes.Name, nil
@@ -98,24 +98,24 @@ func getAccounts(id int) ([]AccountAttributes, error) {
 	resp, err := http.Get(URL + strconv.Itoa(id) + "/accounts")
 
 	if err != nil {
-		return nil, fmt.Errorf("error in making request: %v", err)
+		return nil, fmt.Errorf("error in making request: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("response error: %v", resp.StatusCode)
+		return nil, fmt.Errorf("response error: %w", resp.StatusCode)
 	}
 
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("error in reading response body: %v", err)
+		return nil, fmt.Errorf("error in reading response body: %w", err)
 	}
 
 	var res []AccountResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
-		return nil, fmt.Errorf("error in parsing json: %v", err)
+		return nil, fmt.Errorf("error in parsing json: %w", err)
 	}
 
 	var accounts []AccountAttributes = []AccountAttributes{}
