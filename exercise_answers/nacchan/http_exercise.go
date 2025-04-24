@@ -12,14 +12,14 @@ import (
 )
 
 type UserAttributes struct {
-	Id         int    `json:"id"`
+	ID         int    `json:"id"`
 	Name       string `json:"name"`
 	AccountIds []int  `json:"account_ids"`
 }
 
 type AccountAttributes struct {
-	Id      int    `json:"id"`
-	UserId  int    `json:"user_id"`
+	ID      int    `json:"id"`
+	UserID  int    `json:"user_id"`
 	Name    string `json:"name"`
 	Balance int    `json:"balance"`
 }
@@ -35,13 +35,13 @@ type AccountResponse struct {
 const URL = "https://sample-accounts-api.herokuapp.com/users/"
 
 func main() {
-	var userId int
+	var userID int
 	reader := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Println("Enter user id: ")
-		userIdString, err := reader.ReadString('\n')
-		userIdString = strings.TrimSpace(userIdString)
-		userId, err = strconv.Atoi(userIdString)
+		fmt.Println("Enter user ID: ")
+		userIDString, err := reader.ReadString('\n')
+		userIDString = strings.TrimSpace(userIDString)
+		userID, err = strconv.Atoi(userIDString)
 		if err != nil {
 			fmt.Println("please enter a valid integer")
 			continue
@@ -49,13 +49,13 @@ func main() {
 		break
 	}
 
-	user, err := getUser(userId)
+	user, err := getUser(userID)
 	if err != nil {
 		fmt.Println("Error getting user: ", err)
 		return
 	}
 
-	accounts, err := getAccounts(userId)
+	accounts, err := getAccounts(userID)
 	if err != nil {
 		fmt.Println("Error getting accounts: ", err)
 		return
