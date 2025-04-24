@@ -118,7 +118,7 @@ func getAccounts(id int) ([]AccountAttributes, error) {
 		return nil, fmt.Errorf("error in parsing json: %w", err)
 	}
 
-	var accounts []AccountAttributes = []AccountAttributes{}
+	var accounts []AccountAttributes
 
 	for _, account := range res {
 		accounts = append(accounts, account.AccountAttributes)
