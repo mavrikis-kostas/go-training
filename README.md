@@ -11,7 +11,7 @@ covering HTTP basics, API interactions, and testing practices.
 
 The documentation is built with [MkDocs](https://www.mkdocs.org/) using the Material theme. To view the documentation:
 
-1. Install Python, MkDocs and the Material theme:
+1. Install Python, MkDocs, and the Material theme:
    ```
    brew install pyenv
    pyenv install 3.13.2 && pyenv global 3.13.2
@@ -32,6 +32,8 @@ The training materials cover:
 
 - **HTTP Basics**: Making HTTP requests, parsing responses, and working with JSON
 - **Testing**: Writing unit tests, table-driven tests, and running tests effectively
+- **CLI**: Building command-line interfaces with Go, using the `cobra` library
+- **gRPC**: Understanding gRPC concepts, Protocol Buffers, and implementing gRPC services
 
 ## Getting Started
 

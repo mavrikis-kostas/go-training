@@ -20,6 +20,10 @@ Welcome to the Go Training documentation! This guide will help you learn Go prog
 - Creating commands, subcommands, and flags
 - Implementing command aliases and argument validation
 
+### gRPC
+- Understanding gRPC concepts and Protocol Buffers
+- Implementing gRPC services and clients
+
 ## Prerequisites
 
 Basic knowledge of Go programming (variables, functions, structs)

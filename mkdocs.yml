@@ -28,6 +28,12 @@ nav:
     - Basic Usage: cli/basic-usage.md
     - Advanced Usage: cli/advanced-usage.md
     - Exercises: cli/exercises.md
+  - gRPC:
+    - Overview: grpc/index.md
+    - Introduction to gRPC: grpc/introduction.md
+    - Protocol Buffers: grpc/protobuf.md
+    - Server-Client Example: grpc/server-client-example.md
+    - Exercises: grpc/exercises.md
 
 markdown_extensions:
   - pymdownx.highlight:
